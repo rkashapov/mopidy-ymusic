@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "Mopidy-Ymusic"
+version = "0.1.0"
+description = "Plugin adding Yandex Music support for Mopidy music server"
+authors = ["Rustam Kashapov <hardtechnik91@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+Mopidy = "3.3.0"
+pykka = "3.1.1"
+yandex-music = "2.0.1"
+
+[tool.poetry.dev-dependencies]
+isort = "5.10.1"
+pytest = "7.1.2"
+flake8 = "4.0.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "tests",
+]
+addopts = [
+    "--showlocals",
+    "--tb=short",
+    "--strict-markers",
+    "--disable-warnings",
+]
+
+[tool.poetry.plugins."mopidy.ext"]
+"ymusic" = "mopidy_ymusic:Extension"
