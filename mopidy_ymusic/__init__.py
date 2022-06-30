@@ -5,6 +5,7 @@ from mopidy import config, ext
 
 from .backend import YMusicBackend
 
+
 __version__ = '0.0.1'
 
 logger = logging.getLogger(__name__)
