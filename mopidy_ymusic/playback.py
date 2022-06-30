@@ -2,6 +2,7 @@ import logging
 
 from mopidy.backend import PlaybackProvider
 
+
 logger = logging.getLogger(__name__)
 
 

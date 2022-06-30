@@ -19,6 +19,19 @@ flake8 = "4.0.1"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.isort]
+line_length = 100
+skip_glob = "buid/"
+combine_as_imports = true
+ensure_newline_before_comments = true
+multi_line_output = 3
+sections = "FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
+no_lines_before = "LOCALFOLDER"
+src_paths = "mopidy_ymusic"
+include_trailing_comma = true
+lines_after_imports = 2
+
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 testpaths = [
