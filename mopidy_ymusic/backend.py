@@ -4,6 +4,7 @@ from yandex_music import Client
 
 from .library import YMusicLibraryProvider
 from .playback import YMusicPlaybackProvider
+from .playlist import YMusicPlaylistsProvider
 
 
 class YMusicBackend(ThreadingActor, Backend):
@@ -14,6 +15,7 @@ class YMusicBackend(ThreadingActor, Backend):
         self.audio = audio
         self.library = YMusicLibraryProvider(self)
         self.playback = YMusicPlaybackProvider(audio, self)
+        self.playlists = YMusicPlaylistsProvider(self)
         self.client = Client(config['ymusic']['token'])
         self.config = config
 

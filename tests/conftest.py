@@ -1,23 +1,32 @@
 from unittest import mock
 
 import pytest
-from mopidy.models import Album as MopidyAlbum, Artist as MopidyArtist, Track as MopidyTrack
+from mopidy.models import (
+    Album as MopidyAlbum,
+    Artist as MopidyArtist,
+    Playlist as MopidyPlaylist,
+    Track as MopidyTrack,
+)
 from yandex_music import (
     Album,
     AlbumEvent,
     Artist,
     ArtistEvent,
+    ChartInfo,
     Cover,
     Day,
     DownloadInfo,
     Event,
     Feed,
+    Playlist,
     Search,
     SearchResult,
     Track,
+    TrackShort,
 )
 
 from mopidy_ymusic.backend import YMusicBackend
+from mopidy_ymusic.playlist import YMusicPlaylistsProvider
 
 
 @pytest.fixture
@@ -53,6 +62,20 @@ def track(album, artist):
 
 
 @pytest.fixture
+def playlist(track):
+    return Playlist(
+        uid='playlist-0001',
+        title='A Playlist 01',
+        tracks=[TrackShort(id=track.id, timestamp='', track=track)],
+        cover=Cover(uri='images.com/playlist/cover.jpg?size=%%'),
+        owner=None,
+        made_for=None,
+        play_counter=None,
+        playlist_absence=None,
+    )
+
+
+@pytest.fixture
 def mopidy_artist(artist):
     return MopidyArtist(uri=f'ymusic:artist:{artist.id}', name=artist.name, sortname=artist.name)
 
@@ -74,7 +97,40 @@ def mopidy_track(mopidy_album, mopidy_artist, track):
 
 
 @pytest.fixture
-def client(album, artist, track):
+def mopidy_playlist(mopidy_track, playlist):
+    return MopidyPlaylist(
+        uri=f'ymusic:playlist:{playlist.uid}',
+        name=playlist.title,
+        tracks=(mopidy_track,),
+    )
+
+
+@pytest.fixture
+def tracks_event(track):
+    return Event(
+        id='event-0003',
+        type='tracks',
+        title='Tracks Event',
+        albums=[],
+        artists=[],
+        tracks=[track],
+    )
+
+
+@pytest.fixture
+def chart(playlist):
+    return ChartInfo(
+        chart=playlist,
+        id='world',
+        type=None,
+        title=None,
+        type_for_from='',
+        menu=None,
+    )
+
+
+@pytest.fixture
+def client(album, artist, track, playlist, tracks_event, chart):
     client = mock.Mock()
     client.feed.return_value = Feed(
         days=[
@@ -104,6 +160,7 @@ def client(album, artist, track):
                         )],
                         tracks=[],
                     ),
+                    tracks_event,
                 ],
             ),
         ],
@@ -145,6 +202,8 @@ def client(album, artist, track):
         info.direct_link = f'https://server.com/track/{info.bitrate_in_kbps}/{info.codec}'
 
     client.tracks_download_info.return_value = infos
+    client.playlists_list.return_value = [playlist]
+    client.chart.return_value = chart
     return client
 
 
@@ -163,3 +222,8 @@ def library(backend):
 @pytest.fixture
 def playback(backend):
     return backend.playback
+
+
+@pytest.fixture
+def playlists(backend) -> YMusicPlaylistsProvider:
+    return backend.playlists
