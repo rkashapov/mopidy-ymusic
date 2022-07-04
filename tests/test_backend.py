@@ -84,7 +84,7 @@ def test_get_images(library, mopidy_artist, mopidy_album, mopidy_track, mopidy_p
     # playlists
     assert images[mopidy_playlist.uri] == [Image(uri='https://images.com/playlist/cover.jpg?size=400x400')]
     assert images[WORLD_TOP_100.uri] == [Image(uri='https://images.com/playlist/cover.jpg?size=400x400')]
-    assert event_uri not in images
+    assert images[event_uri] == [Image(uri='https://images.com/track/cover.jpg?size=400x400')]
 
 
 def test_playback(playback, client, track, mopidy_track):

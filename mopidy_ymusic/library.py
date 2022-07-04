@@ -132,7 +132,7 @@ class YMusicLibraryProvider(LibraryProvider):
         for uri in uris:
             artwork = ''
             _, ref_type, item_id = uri.split(':', 2)
-            if ref_type == 'directory':
+            if ref_type == RefType.DIRECTORY.value:
                 if item_id == 'root':
                     artwork = ROOT_ARTWORK_URI
                 else:
@@ -158,9 +158,14 @@ class YMusicLibraryProvider(LibraryProvider):
 
             elif ref_type == RefType.PLAYLIST.value:
                 playlist = None
-                if item_id in self.backend.playlists.chart_types:
+                if item_id.startswith('event'):
+                    _, event_id = item_id.split(':', 1)
+                    event = self.get_feed_event(event_id)
+                    if event.tracks:
+                        artwork = event.tracks[0].cover_uri
+                elif item_id in self.backend.playlists.chart_types:
                     playlist = self.backend.client.chart(item_id).chart
-                elif not item_id.startswith('event'):
+                else:
                     playlist = self.backend.client.playlists_list([item_id])[0]
                 if playlist:
                     artwork = playlist.cover.uri
